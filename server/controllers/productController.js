@@ -9,13 +9,16 @@ export const addProduct = async (req, res) => {
 
     let imageUrl = await Promise.all(
       images.map(async (item) => {
-        let result = await connectCloudinary.uploader(item.path, {
+        let result = await cloudinary.uploader.upload(item.path, {
           resource_type: "image",
         });
         return result.secure_url;
       }),
     );
-    await Product.create({ ...productData, image: imageUrl });
+    await Product.create({
+  ...productData,
+  images: imageUrl,
+});
 
     res.json({ success: true, message: "Product Added" });
   } catch (error) {
