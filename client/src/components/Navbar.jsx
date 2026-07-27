@@ -96,6 +96,17 @@ const Navbar = () => {
               >
                 My Orders
               </li>
+
+<li
+    className="p-1.5 pl-3 hover:bg-primary/10 cursor-pointer"
+    onClick={() => navigate("/seller")}
+  >
+    Seller 
+  </li>
+
+
+
+
               <li
                 className="p-1.5 pl-3 hover:bg-primary/10 cursor-pointer"
                 onClick={logout}
