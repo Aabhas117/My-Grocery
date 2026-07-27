@@ -20,7 +20,7 @@ const Navbar = () => {
 
   const logout = async () => {
     try {
-      const { data } = await axios.post("/api/user/logout");
+      const { data } = await axios.get("/api/user/logout");
       if (data.success) {
         toast.success(data.message);
         setUser(null);
