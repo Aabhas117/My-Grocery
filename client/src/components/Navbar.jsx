@@ -25,11 +25,11 @@ const Navbar = () => {
         toast.success(data.message);
         setUser(null);
         navigate("/");
-      }else {
-        toast.error(data.message)
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
- toast.error(error.message)
+      toast.error(error.message);
     }
   };
 
@@ -151,11 +151,15 @@ const Navbar = () => {
             Contact
           </NavLink>
 
+          <NavLink to="/seller" onClick={() => setOpen(false)}>
+            Seller
+          </NavLink>
+
           {!user ? (
             <button
               onClick={() => {
                 setOpen(false);
-                setshowUserLogin(true);
+                setShowUserLogin(true);
               }}
               className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm"
             >
