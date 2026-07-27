@@ -11,40 +11,38 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
 
- const { axios } = useAppContext();
+  const { axios } = useAppContext();
   const onsubmitHandler = async (event) => {
     try {
-         event.preventDefault();
+      event.preventDefault();
 
-         const productData = {
-            name, 
-            description: description.split('\n'),
-            category, 
-            price,
-            offerPrice
-         }
+      const productData = {
+        name,
+        description: description.split("\n"),
+        category,
+        price,
+        offerPrice,
+      };
 
-         const formData = new FormData();
-         formData.append('productData', JSON.stringify(productData))
-         for(let i=0; i<files.length; i++){
-         formData.append('images', files[i])
-          }
-   const {data} = await axios.post('/api/product/add', formData)
-   if(data.success){
-    toast.success(data.message);
-    setName('');
-    serDescription('')
-    setCategory('')
-    setPrice('')
-    setOfferPrice('')
-    setFiles([])
-
-   } else{
-    toast.error(data.message)
-   }  
-  
+      const formData = new FormData();
+      formData.append("productData", JSON.stringify(productData));
+      for (let i = 0; i < files.length; i++) {
+        formData.append("images", files[i]);
+      }
+      const { data } = await axios.post("/api/product/add", formData);
+      if (data.success) {
+        toast.success(data.message);
+        setName("");
+        serDescription("");
+        setCategory("");
+        setPrice("");
+        setOfferPrice("");
+        setFiles([]);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-        toast.error(error.message) 
+      toast.error(error.message);
     }
     //stop the reloading page
   };

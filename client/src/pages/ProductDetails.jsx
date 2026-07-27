@@ -12,17 +12,16 @@ const ProductDetails = () => {
   const [thumbnail, setThumbnail] = useState(null);
 
   const product = products.find((item) => item._id === id);
-  
+
   useEffect(() => {
     if (products.length > 0 && product) {
       let productsCopy = products.filter(
-        (item) =>
-          item.category === product.category
+        (item) => item.category === product.category,
         //  && item._id !== product._id
       );
 
       console.log("Current Product:", product);
-    console.log("Related Products:", productsCopy);
+      console.log("Related Products:", productsCopy);
 
       setRelatedProducts(productsCopy.slice(0, 5));
     }
@@ -76,7 +75,7 @@ const ProductDetails = () => {
                 .fill("")
                 .map((_, i) => (
                   <img
-                  key={i}
+                    key={i}
                     src={i < 4 ? assets.star_icon : assets.star_dull_icon}
                     alt=""
                     className="md:w-4 w-3.5"

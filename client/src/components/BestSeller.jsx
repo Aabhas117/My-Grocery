@@ -12,7 +12,11 @@ const BestSeller = () => {
           .filter((product) => product.inStock)
           .slice(0, 5)
           .map((product, index) => (
-            <ProductCard key={product._id} product={product} goToCategory={true} />
+            <ProductCard
+              key={product._id}
+              product={product}
+              goToCategory={true}
+            />
           ))}
       </div>
     </div>
@@ -20,4 +24,3 @@ const BestSeller = () => {
 };
 
 export default BestSeller;
-
