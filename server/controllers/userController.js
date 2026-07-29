@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     const user = await User.create({ name, email, password: hashedPassword });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      // expiresIn: "1d",
     });
 
     res.cookie("token", token, {
@@ -29,7 +29,8 @@ export const register = async (req, res) => {
       secure: process.env.NODE_ENV === "production", //use secure cookies in production
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict", //CSRF Protection
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000, //Cookie expiration time
+      // maxAge: 1 * 24 * 60 * 60 * 1000,
+       //Cookie expiration time
     });
     return res.json({
       success: true,
