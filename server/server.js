@@ -24,6 +24,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://my-grocery-j4es.vercel.app",
   "https://my-grocery-j4es-movm43c4y-aabhas117s-projects.vercel.app",
+  "https://my-grocery-one.vercel.app",
 ];
 
 app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhook);
