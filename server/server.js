@@ -12,12 +12,49 @@ import dns from "dns";
 import addressRouter from "./routes/addressRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import { stripeWebhook } from "./controllers/orderController.js";
+import axios from "axios";
+import Product from "./models/Product.js";
+
+import {
+  startCppServer,
+  waitForCppServer,
+  stopCppServer,
+} from "./utils/cppProcess.js";
+
+
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const app = express();
 const port = process.env.PORT || 4000;
 
 await connectDB();
 await connectCloudinary();
+console.log("✓ Cloudinary Connected");
+
+
+// Start C++ Engine
+await startCppServer();
+
+await waitForCppServer();
+
+// Initialize Trie
+const products = await Product.find().lean();
+
+try {
+  await axios.post(
+    `http://${process.env.CPP_HOST || "127.0.0.1"}:${process.env.CPP_PORT || 18080}/initialize`,
+    {
+      products,
+    }
+  );
+
+  console.log(`✓ Trie Initialized (${products.length} products)`);
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+} catch (error) {
+
+  stopCppServer();
+
+  throw error;
+}
 
 //allow multiple origin
 const allowedOrigins = [
@@ -43,5 +80,19 @@ app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Express Server is running on http://localhost:${port}`);
+});
+
+process.on("SIGINT", () => {
+  console.log("\nStopping services...");
+
+  stopCppServer();
+
+  process.exit(0);
+});
+
+process.on("SIGTERM", () => {
+  stopCppServer();
+
+  process.exit(0);
 });

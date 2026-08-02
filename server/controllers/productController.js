@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import Product from "../models/Product.js";
+import cppClient from "../utils/cppClient.js";
 
 //get product : /api/product/add
 export const addProduct = async (req, res) => {
@@ -31,12 +32,49 @@ export const addProduct = async (req, res) => {
 export const productList = async (req, res) => {
   try {
     const products = await Product.find({});
+    await cppClient.post("/initialize", {
+      products,
+    });
     res.json({ success: true, products });
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });
   }
 };
+
+
+export const searchProducts = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.trim() === "") {
+      return res.json({
+        success: true,
+        products: [],
+      });
+    }
+
+    const { data } = await cppClient.get("/search", {
+      params: {
+        query: q,
+      },
+    });
+
+    return res.json({
+      success: true,
+      products: data.products,
+    });
+
+  } catch (error) {
+    console.log(error.message);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 // get single product : /api/product/id
 export const productById = async (req, res) => {

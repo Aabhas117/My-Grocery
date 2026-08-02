@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
 import axios from "axios";
 
@@ -18,6 +17,8 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchRecommendations, setSearchRecommendations] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   //fetch seller status
  const fetchSeller = async () => {
@@ -52,19 +53,6 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  //fetch user auth status, user data and cart items
-  // const fetchUser = async () => {
-  //   try {
-  //     const { data } = await axios.get("/api/user/is-auth");
-  //     if (data.success) {
-  //       setUser(data.user);
-  //       setCartItems(data.user.cartItems);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     setUser(null);
-  //   }
-  // };
 
   //fetch all products
   const fetchProducts = async () => {
@@ -77,6 +65,35 @@ export const AppContextProvider = ({ children }) => {
       }
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const searchProducts = async (query) => {
+    try {
+      if (!query.trim()) {
+        setSearchRecommendations([]);
+        return;
+      }
+
+      setSearchLoading(true);
+
+      const { data } = await axios.get("/api/product/search", {
+        params: {
+          q: query,
+        },
+      });
+
+      if (data.success) {
+        setSearchRecommendations(data.products);
+      } else {
+        setSearchRecommendations([]);
+      }
+    } catch (error) {
+      console.log(error);
+
+      setSearchRecommendations([]);
+    } finally {
+      setSearchLoading(false);
     }
   };
 
@@ -140,6 +157,18 @@ export const AppContextProvider = ({ children }) => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+
+      searchProducts(searchQuery);
+
+    }, 300);
+
+    return () => clearTimeout(timer);
+
+  }, [searchQuery]);
+
   //update database cart items
   useEffect(() => {
     const updateCart = async () => {
@@ -173,6 +202,9 @@ export const AppContextProvider = ({ children }) => {
     cartItems,
     searchQuery,
     setSearchQuery,
+    searchRecommendations,
+    searchLoading,
+    searchProducts,
     getCartAmount,
     getCartCount,
     axios,

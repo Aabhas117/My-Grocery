@@ -1,0 +1,17 @@
+# CMake build directory
+build/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+*.o
+*.obj
