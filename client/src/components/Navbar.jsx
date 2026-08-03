@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+import { X } from "lucide-react";
 
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
@@ -375,8 +376,11 @@ ${highlightedIndex === index
       {/* Mobile Menu */}
       {open && (
         <div
-          className={`${open ? "flex" : "hidden"} absolute  top: 60px left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden`}
+          className={`${open ? "flex" : "hidden"} absolute top-0 60px left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-10`}
         >
+          <button onClick={()=> setOpen(false)}>
+            <X size={18} />  
+          </button>
           <NavLink to="/" onClick={() => setOpen(false)}>
             Home
           </NavLink>
