@@ -6,6 +6,7 @@ import {
   changeStock,
   productById,
   productList,
+  searchProducts,
 } from "../controllers/productController.js";
 
 const productRouter = express.Router();
@@ -13,6 +14,7 @@ const productRouter = express.Router();
 // productRouter.post("/add", upload.array(["images"]), authSeller, addProduct);
 productRouter.post("/add", upload.array("images", 4), authSeller, addProduct);
 productRouter.get("/list", productList);
+productRouter.get("/search", searchProducts);
 productRouter.get("/id", productById);
 productRouter.post("/stock", authSeller, changeStock);
 
