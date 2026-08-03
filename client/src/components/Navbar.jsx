@@ -52,51 +52,37 @@ const Navbar = () => {
   };
 
   const handleSearchKeyDown = (e) => {
-
     if (!showSearchDropdown) return;
 
     switch (e.key) {
-
       case "ArrowDown":
-
         e.preventDefault();
 
         setHighlightedIndex((prev) =>
-          prev < searchRecommendations.length - 1
-            ? prev + 1
-            : 0
+          prev < searchRecommendations.length - 1 ? prev + 1 : 0,
         );
 
         break;
 
       case "ArrowUp":
-
         e.preventDefault();
 
         setHighlightedIndex((prev) =>
-          prev > 0
-            ? prev - 1
-            : searchRecommendations.length - 1
+          prev > 0 ? prev - 1 : searchRecommendations.length - 1,
         );
 
         break;
 
       case "Enter":
-
         if (highlightedIndex >= 0) {
-
           e.preventDefault();
 
-          handleProductClick(
-            searchRecommendations[highlightedIndex]
-          );
-
+          handleProductClick(searchRecommendations[highlightedIndex]);
         }
 
         break;
 
       case "Escape":
-
         setShowSearchDropdown(false);
         setHighlightedIndex(-1);
 
@@ -105,36 +91,23 @@ const Navbar = () => {
       default:
         break;
     }
-
   };
 
   useEffect(() => {
-
     const handleClickOutside = (event) => {
-
       if (
         searchContainerRef.current &&
         !searchContainerRef.current.contains(event.target)
       ) {
         setShowSearchDropdown(false);
       }
-
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-
   }, []);
 
   return (
@@ -179,99 +152,70 @@ const Navbar = () => {
               placeholder="Search products..."
             />
 
-            <img
-              src={assets.search_icon}
-              alt="search"
-              className="w-4 h-4"
-            />
+            <img src={assets.search_icon} alt="search" className="w-4 h-4" />
           </div>
 
           {showSearchDropdown && (
             <div className="absolute top-12 w-full bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
-
               {/* Loading */}
 
               {searchLoading && (
                 <div className="flex items-center justify-center gap-3 py-8">
-
                   <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
 
-                  <span className="text-sm text-gray-500">
-                    Searching...
-                  </span>
-
+                  <span className="text-sm text-gray-500">Searching...</span>
                 </div>
               )}
 
               {/* Results */}
 
-              {!searchLoading &&
-                searchRecommendations.length > 0 && (
+              {!searchLoading && searchRecommendations.length > 0 && (
+                <div className="max-h-96 overflow-y-auto">
+                  {searchRecommendations.map((product, index) => (
+                    <button
+                      key={product._id}
+                      onClick={() => handleProductClick(product)}
+                      className={`w-full px-4 py-3 flex items-center gap-3 text-left transition
+${highlightedIndex === index ? "bg-green-100" : "hover:bg-green-50"}`}
+                    >
+                      <img
+                        src={
+                          product.images?.length
+                            ? product.images[0]
+                            : assets.search_icon
+                        }
+                        alt={product.name}
+                        className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+                      />
 
-                  <div className="max-h-96 overflow-y-auto">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{product.name}</p>
 
-                    {searchRecommendations.map((product, index) => (
+                        <p className="text-xs text-gray-500">
+                          {product.category}
+                        </p>
+                      </div>
 
-                      <button
-                        key={product._id}
-                        onClick={() => handleProductClick(product)}
-                        className={`w-full px-4 py-3 flex items-center gap-3 text-left transition
-${highlightedIndex === index
-                            ? "bg-green-100"
-                            : "hover:bg-green-50"
-                          }`}
-                      >
+                      <div className="flex flex-col items-end ml-2">
+                        <span className="font-semibold text-green-600">
+                          ₹{product.offerPrice}
+                        </span>
 
-                        <img
-                          src={
-                            product.images?.length
-                              ? product.images[0]
-                              : assets.search_icon
-                          }
-                          alt={product.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0"
-                        />
-
-                        <div className="flex-1 min-w-0">
-
-                          <p className="font-medium truncate">
-                            {product.name}
-                          </p>
-
-                          <p className="text-xs text-gray-500">
-                            {product.category}
-                          </p>
-
-                        </div>
-
-                        <div className="flex flex-col items-end ml-2">
-
-                          <span className="font-semibold text-green-600">
-                            ₹{product.offerPrice}
-                          </span>
-
-                          <span className="text-xs text-gray-400 line-through">
-                            ₹{product.price}
-                          </span>
-
-                        </div>
-
-                      </button>
-
-                    ))}
-
-                  </div>
-
-                )}
+                        <span className="text-xs text-gray-400 line-through">
+                          ₹{product.price}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Empty State */}
 
               {!searchLoading &&
                 searchQuery.trim() &&
                 searchRecommendations.length === 0 && (
-
                   <div className="py-8 flex flex-col items-center">
-
                     <img
                       src={assets.search_icon}
                       className="w-8 opacity-40"
@@ -282,17 +226,11 @@ ${highlightedIndex === index
                       No products found
                     </p>
 
-                    <p className="text-xs text-gray-400">
-                      Try another keyword
-                    </p>
-
+                    <p className="text-xs text-gray-400">Try another keyword</p>
                   </div>
-
                 )}
-
             </div>
           )}
-
         </div>
 
         <div
@@ -378,8 +316,8 @@ ${highlightedIndex === index
         <div
           className={`${open ? "flex" : "hidden"} absolute top-0 60px left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-10`}
         >
-          <button onClick={()=> setOpen(false)}>
-            <X size={18} />  
+          <button onClick={() => setOpen(false)}>
+            <X size={18} />
           </button>
           <NavLink to="/" onClick={() => setOpen(false)}>
             Home
@@ -399,6 +337,124 @@ ${highlightedIndex === index
           <NavLink to="/seller" onClick={() => setOpen(false)}>
             Seller
           </NavLink>
+
+          <div
+            ref={searchContainerRef}
+            // className="flex relative flex-col w-96"
+            className="relative mx-auto mt-4 flex w-[85%] items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5"
+          >
+            <div 
+            className="h-4 w-4 text-gray-500"
+            // className="flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full bg-white"
+            >
+             <search  size={16} className="shrink-0 text-gray-400" / >
+              <input
+                value={searchQuery}
+                onKeyDown={handleSearchKeyDown}
+                onFocus={() => {
+                  if (
+                    searchQuery.trim().length > 0 ||
+                    searchRecommendations.length > 0
+                  ) {
+                    setShowSearchDropdown(true);
+                  }
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  setSearchQuery(value);
+
+                  setHighlightedIndex(-1);
+
+                  setShowSearchDropdown(value.trim().length > 0);
+                }}
+                className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-400 "
+                type="text"
+                placeholder="Search products."
+              />
+
+              {/* <img src={assets.search_icon} alt="search" className="" /> */}
+            </div>
+
+            {showSearchDropdown && (
+              <div className="absolute top-12 w-full bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
+                {/* Loading */}
+
+                {searchLoading && (
+                  <div className="flex items-center justify-center gap-3 py-8">
+                    <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+
+                    <span className="text-sm text-gray-500">Searching...</span>
+                  </div>
+                )}
+
+                {/* Results */}
+
+                {!searchLoading && searchRecommendations.length > 0 && (
+                  <div className="max-h-96 overflow-y-auto">
+                    {searchRecommendations.map((product, index) => (
+                      <button
+                        key={product._id}
+                        onClick={() => handleProductClick(product)}
+                        className={`w-full px-4 py-3 flex items-center gap-3 text-left transition
+${highlightedIndex === index ? "bg-green-100" : "hover:bg-green-50"}`}
+                      >
+                        <img
+                          src={
+                            product.images?.length
+                              ? product.images[0]
+                              : assets.search_icon
+                          }
+                          alt={product.name}
+                          className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+                        />
+
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{product.name}</p>
+
+                          <p className="text-xs text-gray-500">
+                            {product.category}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col items-end ml-2">
+                          <span className="font-semibold text-green-600">
+                            ₹{product.offerPrice}
+                          </span>
+
+                          <span className="text-xs text-gray-400 line-through">
+                            ₹{product.price}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Empty State */}
+
+                {!searchLoading &&
+                  searchQuery.trim() &&
+                  searchRecommendations.length === 0 && (
+                    <div className="py-8 flex flex-col items-center">
+                      <img
+                        src={assets.search_icon}
+                        className="w-8 opacity-40"
+                        alt=""
+                      />
+
+                      <p className="mt-3 text-gray-500 font-medium">
+                        No products found
+                      </p>
+
+                      <p className="text-xs text-gray-400">
+                        Try another keyword
+                      </p>
+                    </div>
+                  )}
+              </div>
+            )}
+          </div>
 
           {!user ? (
             <button
