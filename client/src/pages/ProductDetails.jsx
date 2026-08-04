@@ -5,27 +5,25 @@ import { assets } from "../assets/assets";
 import ProductCard from "../components/ProductCard";
 
 const ProductDetails = () => {
-  const { products, navigate, currency, addToCart } = useAppContext();
+  const {
+    products,
+    navigate,
+    currency,
+    addToCart,
+    getRecommendations,
+    recommendedProducts,
+  } = useAppContext();
   const { id } = useParams();
 
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const [thumbnail, setThumbnail] = useState(null);
 
   const product = products.find((item) => item._id === id);
 
   useEffect(() => {
-    if (products.length > 0 && product) {
-      let productsCopy = products.filter(
-        (item) => item.category === product.category,
-        //  && item._id !== product._id
-      );
-
-      console.log("Current Product:", product);
-      console.log("Related Products:", productsCopy);
-
-      setRelatedProducts(productsCopy.slice(0, 5));
+    if (product) {
+      getRecommendations(product._id);
     }
-  }, [products, product]);
+  }, [product]);
 
   useEffect(() => {
     // setThumbnail(product?.image[0] ? product.image[0] : null);
@@ -130,7 +128,7 @@ const ProductDetails = () => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6 lg:grid-cols-5 mt-6 w-full">
-            {relatedProducts
+            {recommendedProducts
               .filter((product) => product.inStock)
               .map((product, index) => (
                 <ProductCard key={index} product={product} />

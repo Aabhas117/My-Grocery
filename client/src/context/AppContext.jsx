@@ -19,24 +19,25 @@ export const AppContextProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRecommendations, setSearchRecommendations] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
   //fetch seller status
- const fetchSeller = async () => {
-  try {
-    const { data } = await axios.post("/api/seller/is-auth");
+  const fetchSeller = async () => {
+    try {
+      const { data } = await axios.post("/api/seller/is-auth");
 
-    console.log("Seller Auth Response:", data);
+      console.log("Seller Auth Response:", data);
 
-    if (data.success) {
-      setIsSeller(true);
-    } else {
+      if (data.success) {
+        setIsSeller(true);
+      } else {
+        setIsSeller(false);
+      }
+    } catch (error) {
+      console.log("Seller Auth Error:", error.response?.data);
       setIsSeller(false);
     }
-  } catch (error) {
-    console.log("Seller Auth Error:", error.response?.data);
-    setIsSeller(false);
-  }
-};
+  };
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user/is-auth");
@@ -94,6 +95,23 @@ export const AppContextProvider = ({ children }) => {
       setSearchRecommendations([]);
     } finally {
       setSearchLoading(false);
+    }
+  };
+
+  const getRecommendations = async (productId) => {
+    try {
+      const { data } = await axios.get(
+        `/api/recommendations/${productId}`
+      );
+
+      if (data.success) {
+        setRecommendedProducts(data.products);
+      } else {
+        setRecommendedProducts([]);
+      }
+    } catch (error) {
+      console.log(error);
+      setRecommendedProducts([]);
     }
   };
 
@@ -205,6 +223,8 @@ export const AppContextProvider = ({ children }) => {
     searchRecommendations,
     searchLoading,
     searchProducts,
+    getRecommendations,
+    recommendedProducts,
     getCartAmount,
     getCartCount,
     axios,

@@ -11,7 +11,13 @@ add_executable(CppEngine
     src/main.cpp
     src/Server.cpp
     src/Trie.cpp
+
     src/RecommendationEngine.cpp
+
+    src/ProductGraph.cpp
+    src/ProductRecommendationEngine.cpp
+    src/SimilarityCalculator.cpp
+    src/TextUtils.cpp
 )
 
 # Windows-only networking libraries

@@ -35,7 +35,12 @@ const ProductCard = ({ product, goToCategory = false }) => {
         }}
         className="border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white w-full"
       >
-        <div className="group cursor-pointer flex items-center justify-center px-2">
+        <div className="group relative cursor-pointer flex items-center justify-center px-2">
+          {product.similarityScore !== undefined && (
+            <div className="absolute left-2 top-2 z-10 rounded-full bg-green-600 px-2 py-1 text-[10px] font-semibold text-white shadow-lg">
+              C++ Similarity Score: {Math.min(100, Math.round(product.similarityScore))}%
+            </div>
+          )}
           <img
             className="group-hover:scale-105 transition max-w-26 md:max-w-36"
             src={product.images?.[0]}
