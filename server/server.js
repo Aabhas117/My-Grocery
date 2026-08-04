@@ -11,6 +11,7 @@ import cartRouter from "./routes/cartRoute.js";
 import dns from "dns";
 import addressRouter from "./routes/addressRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import recommendationRouter from "./routes/recommendationRoute.js";
 import { stripeWebhook } from "./controllers/orderController.js";
 import axios from "axios";
 import Product from "./models/Product.js";
@@ -78,6 +79,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/recommendations", recommendationRouter);
 
 app.listen(port, () => {
   console.log(`Express Server is running on http://localhost:${port}`);
