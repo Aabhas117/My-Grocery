@@ -69,6 +69,15 @@ const SellerLogin = () => {
           <button className="bg-primary text-white w-full py-2 rounded-md cursor-pointer">
             Login
           </button>
+          <p className="text-xs text-gray-500 mt-1 text-center w-full">
+            Don't have a seller account?{" "}
+            <span
+              onClick={() => navigate("/seller/register")}
+              className="text-primary underline cursor-pointer"
+            >
+              Register as Seller
+            </span>
+          </p>
         </div>
       </form>
     )

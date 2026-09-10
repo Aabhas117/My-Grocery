@@ -8,6 +8,57 @@ const isProduction =
   process.env.VERCEL === "true" ||
   process.env.VERCEL_ENV === "production";
 
+//seller register : /api/seller/register
+
+export const sellerRegister = async (req, res) => {
+  try {
+    const { name, email, password, inviteCode } = req.body;
+
+    if (!name || !email || !password || !inviteCode) {
+      return res.json({
+        success: false,
+        message: "Name, email, password, and invite code are required",
+      });
+    }
+
+    // Validate Seller Invite Code
+    const expectedCode = process.env.SELLER_INVITE_CODE;
+    if (!expectedCode || inviteCode !== expectedCode) {
+      return res.json({
+        success: false,
+        message: "Invalid seller invite code",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({
+        success: false,
+        message:
+          "Account with this email already exists. Please login or use a different email.",
+      });
+    }
+
+    // Hash password & create seller user
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: "seller",
+    });
+
+    return res.json({
+      success: true,
+      message: "Seller account registered successfully. Please login.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 //seller login : /api/seller/login
 
 export const sellerLogin = async (req, res) => {
