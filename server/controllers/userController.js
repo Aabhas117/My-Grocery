@@ -2,6 +2,12 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const isProduction =
+  process.env.NODE_ENV === "production" ||
+  process.env.VERCEL === "1" ||
+  process.env.VERCEL === "true" ||
+  process.env.VERCEL_ENV === "production";
+
 //register user
 
 export const register = async (req, res) => {
@@ -25,12 +31,10 @@ export const register = async (req, res) => {
     });
 
     res.cookie("token", token, {
-      httpOnly: true, //prevent javascript to access cookie
-      secure: process.env.NODE_ENV === "production", //use secure cookies in production
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", //CSRF Protection
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
-      // maxAge: 1 * 24 * 60 * 60 * 1000,
-       //Cookie expiration time
     });
     return res.json({
       success: true,
@@ -69,8 +73,8 @@ export const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -109,8 +113,8 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
     });
     return res.json({ success: true, message: "Logged Out" });
