@@ -15,25 +15,14 @@ const authSeller = async (req, res, next) => {
 
     const decoded = jwt.verify(activeToken, process.env.JWT_SECRET);
 
-    // If token directly contains env seller or isSeller flag
-    if (
-      decoded.isSeller ||
-      (process.env.SELLER_EMAIL && decoded.email === process.env.SELLER_EMAIL)
-    ) {
-      return next();
-    }
-
-    // Otherwise check MongoDB user role
+    // Verify role-based seller authorization
     if (decoded.id) {
       const user = await User.findById(decoded.id);
-      if (
-        user &&
-        (user.role === "seller" ||
-          (process.env.SELLER_EMAIL &&
-            user.email === process.env.SELLER_EMAIL))
-      ) {
+      if (user && user.role === "seller") {
         return next();
       }
+    } else if (decoded.isSeller) {
+      return next();
     }
 
     return res.json({

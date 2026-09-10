@@ -21,32 +21,6 @@ export const sellerLogin = async (req, res) => {
       });
     }
 
-    // Check hardcoded env credentials fallback if configured
-    const isEnvSeller =
-      process.env.SELLER_EMAIL &&
-      process.env.SELLER_PASSWORD &&
-      email === process.env.SELLER_EMAIL &&
-      password === process.env.SELLER_PASSWORD;
-
-    if (isEnvSeller) {
-      const token = jwt.sign(
-        { email, isSeller: true },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "1d",
-        },
-      );
-
-      res.cookie("sellerToken", token, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-        path: "/",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      return res.json({ success: true, message: "Logged In" });
-    }
-
     // Authenticate user against MongoDB
     const user = await User.findOne({ email });
 
@@ -59,12 +33,8 @@ export const sellerLogin = async (req, res) => {
       return res.json({ success: false, message: "Invalid email or password" });
     }
 
-    // Check if user has seller role or matches SELLER_EMAIL
-    const isAuthorizedSeller =
-      user.role === "seller" ||
-      (process.env.SELLER_EMAIL && user.email === process.env.SELLER_EMAIL);
-
-    if (!isAuthorizedSeller) {
+    // Role-based seller authorization check
+    if (user.role !== "seller") {
       return res.json({
         success: false,
         message: "User is not authorized as a seller",
@@ -72,7 +42,7 @@ export const sellerLogin = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, isSeller: true },
+      { id: user._id, email: user.email, role: user.role, isSeller: true },
       process.env.JWT_SECRET,
       {
         expiresIn: "1d",
