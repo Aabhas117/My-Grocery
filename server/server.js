@@ -33,14 +33,12 @@ console.log("✓ Cloudinary Connected");
 
 
 // Start C++ Engine
-await startCppServer();
-
-await waitForCppServer();
-
-// Initialize Trie
-const products = await Product.find().lean();
-
 try {
+  await startCppServer();
+  await waitForCppServer();
+
+  // Initialize Trie
+  const products = await Product.find().lean();
   await axios.post(
     `http://${process.env.CPP_HOST || "127.0.0.1"}:${process.env.CPP_PORT || 18080}/initialize`,
     {
@@ -51,10 +49,8 @@ try {
   console.log(`✓ Trie Initialized (${products.length} products)`);
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 } catch (error) {
-
+  console.warn("⚠️ C++ Search Engine unavailable:", error.message);
   stopCppServer();
-
-  throw error;
 }
 
 //allow multiple origin
