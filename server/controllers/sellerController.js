@@ -12,21 +12,12 @@ const isProduction =
 
 export const sellerRegister = async (req, res) => {
   try {
-    const { name, email, password, inviteCode } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!name || !email || !password || !inviteCode) {
+    if (!name || !email || !password) {
       return res.json({
         success: false,
-        message: "Name, email, password, and invite code are required",
-      });
-    }
-
-    // Validate Seller Invite Code
-    const expectedCode = process.env.SELLER_INVITE_CODE;
-    if (!expectedCode || inviteCode !== expectedCode) {
-      return res.json({
-        success: false,
-        message: "Invalid seller invite code",
+        message: "Name, email, and password are required",
       });
     }
 

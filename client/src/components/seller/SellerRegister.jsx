@@ -7,7 +7,6 @@ const SellerRegister = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (event) => {
@@ -19,7 +18,6 @@ const SellerRegister = () => {
         name,
         email,
         password,
-        inviteCode,
       });
 
       if (data.success) {
@@ -75,18 +73,6 @@ const SellerRegister = () => {
             value={password}
             type="password"
             placeholder="Enter password"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
-            required
-          />
-        </div>
-
-        <div className="w-full">
-          <p>Seller Invite Code</p>
-          <input
-            onChange={(e) => setInviteCode(e.target.value)}
-            value={inviteCode}
-            type="password"
-            placeholder="Enter seller registration code"
             className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
             required
           />
