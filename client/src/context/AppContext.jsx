@@ -26,15 +26,12 @@ export const AppContextProvider = ({ children }) => {
     try {
       const { data } = await axios.post("/api/seller/is-auth");
 
-      console.log("Seller Auth Response:", data);
-
       if (data.success) {
         setIsSeller(true);
       } else {
         setIsSeller(false);
       }
-    } catch (error) {
-      console.log("Seller Auth Error:", error.response?.data);
+    } catch {
       setIsSeller(false);
     }
   };
@@ -42,14 +39,11 @@ export const AppContextProvider = ({ children }) => {
     try {
       const { data } = await axios.get("/api/user/is-auth");
 
-      console.log("USER is-auth:", data);
-
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems);
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       setUser(null);
     }
   };
@@ -229,6 +223,8 @@ export const AppContextProvider = ({ children }) => {
     getCartCount,
     axios,
     fetchProducts,
+    fetchSeller,
+    fetchUser,
     setCartItems,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
