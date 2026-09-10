@@ -9,13 +9,16 @@ export const placeOrderCOD = async (req, res) => {
   try {
     const userId = req.userId;
     const { items, address } = req.body;
-    if (!address || items.length === 0) {
+    if (!address || !items || items.length === 0) {
       return res.json({ success: false, message: "Invalid data" });
     }
-    let amount = await items.reduce(async (acc, item) => {
+    let amount = 0;
+    for (const item of items) {
       const product = await Product.findById(item.product);
-      return (await acc) + product.offerPrice * item.quantity;
-    }, 0);
+      if (product) {
+        amount += product.offerPrice * item.quantity;
+      }
+    }
 
     amount += Math.floor(amount * 0.02);
 
@@ -27,7 +30,7 @@ export const placeOrderCOD = async (req, res) => {
       paymentType: "COD",
     });
 
-    return res.json({ success: true, message: "Order Places Successfully" });
+    return res.json({ success: true, message: "Order Placed Successfully" });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -42,22 +45,23 @@ export const placeOrderStripe = async (req, res) => {
 
     const { origin } = req.headers;
 
-    if (!address || items.length === 0) {
+    if (!address || !items || items.length === 0) {
       return res.json({ success: false, message: "Invalid data" });
     }
 
     let productData = [];
-    //calculate amount
-    let amount = await items.reduce(async (acc, item) => {
+    let amount = 0;
+    for (const item of items) {
       const product = await Product.findById(item.product);
-
-      productData.push({
-        name: product.name,
-        price: product.offerPrice,
-        quantity: item.quantity,
-      });
-      return (await acc) + product.offerPrice * item.quantity;
-    }, 0);
+      if (product) {
+        productData.push({
+          name: product.name,
+          price: product.offerPrice,
+          quantity: item.quantity,
+        });
+        amount += product.offerPrice * item.quantity;
+      }
+    }
 
     amount += Math.floor(amount * 0.02);
 
@@ -80,7 +84,7 @@ export const placeOrderStripe = async (req, res) => {
           product_data: {
             name: item.name,
           },
-          unit_amount: Math.floor(item.price + item.price * 0.02) * 100,
+          unit_amount: Math.round(item.price * 1.02 * 100),
         },
 
         quantity: item.quantity,
@@ -125,34 +129,56 @@ export const stripeWebhook = async (request, response) => {
   switch (event.type) {
     case "payment_intent.succeeded": {
       const paymentIntent = event.data.object;
-      const paymentIntentId = paymentIntent.id;
+      let orderId = paymentIntent.metadata?.orderId;
+      let userId = paymentIntent.metadata?.userId;
 
-      const sessions = await stripeInstance.checkout.sessions.list({
-        payment_intent: paymentIntentId,
-      });
+      if (!orderId || !userId) {
+        const sessions = await stripeInstance.checkout.sessions.list({
+          payment_intent: paymentIntent.id,
+        });
 
-      const { orderId, userId } = sessions.data[0].metadata;
+        if (sessions.data && sessions.data.length > 0 && sessions.data[0].metadata) {
+          orderId = orderId || sessions.data[0].metadata.orderId;
+          userId = userId || sessions.data[0].metadata.userId;
+        }
+      }
+
+      if (!orderId) {
+        console.warn(`[Stripe Webhook] Warning: Could not find orderId for payment_intent ${paymentIntent.id}`);
+        break;
+      }
 
       await Order.findByIdAndUpdate(orderId, {
         isPaid: true,
       });
 
-      await User.findByIdAndUpdate(userId, {
-        cartItems: {},
-      });
+      if (userId) {
+        await User.findByIdAndUpdate(userId, {
+          cartItems: {},
+        });
+      }
 
       break;
     }
 
     case "payment_intent.payment_failed": {
       const paymentIntent = event.data.object;
-      const paymentIntentId = paymentIntent.id;
+      let orderId = paymentIntent.metadata?.orderId;
 
-      const sessions = await stripeInstance.checkout.sessions.list({
-        payment_intent: paymentIntentId,
-      });
+      if (!orderId) {
+        const sessions = await stripeInstance.checkout.sessions.list({
+          payment_intent: paymentIntent.id,
+        });
 
-      const { orderId } = sessions.data[0].metadata;
+        if (sessions.data && sessions.data.length > 0 && sessions.data[0].metadata) {
+          orderId = sessions.data[0].metadata.orderId;
+        }
+      }
+
+      if (!orderId) {
+        console.warn(`[Stripe Webhook] Warning: Could not find orderId for failed payment_intent ${paymentIntent.id}`);
+        break;
+      }
 
       await Order.findByIdAndDelete(orderId);
 

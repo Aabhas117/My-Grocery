@@ -22,7 +22,6 @@ const MyOrders = () => {
     if (user) {
       fetchMyOrders();
     }
-    fetchMyOrders();
   }, [user]);
 
   return (
@@ -33,7 +32,7 @@ const MyOrders = () => {
       </div>
       {myOrders.map((order, index) => (
         <div
-          key={index}
+          key={order._id || index}
           className="border border-gray-300 rounded-lg mb-10 p-4 py-5 max-w-4xl"
         >
           <p className="flex justify-between md:items-center text-gray-400 md:font-medium max-md:flex-col">
@@ -44,24 +43,25 @@ const MyOrders = () => {
               {order.amount}
             </span>
           </p>
-          {order.items.map((item, index) => (
+          {order.items.map((item, itemIdx) => (
             <div
-              className={`relative bg-white text-gray-500/70 ${order.items.length !== index + 1 && "border-b"} border-gray-300 flex flex-col md:flex-row md:items-center justify-between p-4 py-5 md:gap-16 w-full max-w-4xl`}
+              key={itemIdx}
+              className={`relative bg-white text-gray-500/70 ${order.items.length !== itemIdx + 1 && "border-b"} border-gray-300 flex flex-col md:flex-row md:items-center justify-between p-4 py-5 md:gap-16 w-full max-w-4xl`}
             >
               <div className="flex items-center mb-4 md:mb-0">
                 <div className="bg-primary/10 p-4 rounded-lg">
                   <img
-                    src={item.product.images?.[0]}
+                    src={item.product?.images?.[0] || assets.box_icon}
                     alt=""
-                    className="w-16 h-16"
+                    className="w-16 h-16 object-cover"
                   />
                 </div>
 
                 <div className="ml-4">
                   <h2 className="text-xl font-medium text-gray-800">
-                    {item.product.name}
+                    {item.product?.name || "Product Unavailable"}
                   </h2>
-                  <p>Category: {item.product.category}</p>
+                  <p>Category: {item.product?.category || "N/A"}</p>
                 </div>
               </div>
 
@@ -72,7 +72,7 @@ const MyOrders = () => {
               </div>
               <p className="text-primary text-lg font-medium">
                 Amount: {currency}
-                {item.product.offerPrice * item.quantity}
+                {(item.product?.offerPrice || 0) * item.quantity}
               </p>
             </div>
           ))}

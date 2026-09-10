@@ -7,6 +7,15 @@ export const sellerLogin = async (req, res) => {
     const { email, password } = req.body;
 
     if (
+      !email ||
+      !password ||
+      !process.env.SELLER_EMAIL ||
+      !process.env.SELLER_PASSWORD
+    ) {
+      return res.json({ success: false, message: "Invalid Credentials" });
+    }
+
+    if (
       password === process.env.SELLER_PASSWORD &&
       email === process.env.SELLER_EMAIL
     ) {

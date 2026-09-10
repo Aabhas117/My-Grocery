@@ -146,8 +146,8 @@ int main()
                                                  product.id = p["_id"].s();
                                                  product.name = p["name"].s();
 
-                                                 product.price = p["price"].d();
-                                                 product.offerPrice = p["offerPrice"].d();
+                                                 product.price = (p["price"].t() == crow::json::type::Number) ? static_cast<double>(p["price"].i()) : p["price"].d();
+                                                 product.offerPrice = (p["offerPrice"].t() == crow::json::type::Number) ? static_cast<double>(p["offerPrice"].i()) : p["offerPrice"].d();
 
                                                  product.category = p["category"].s();
                                                  product.inStock = p["inStock"].b();

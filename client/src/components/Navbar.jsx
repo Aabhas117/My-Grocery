@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
@@ -314,7 +314,7 @@ ${highlightedIndex === index ? "bg-green-100" : "hover:bg-green-50"}`}
       {/* Mobile Menu */}
       {open && (
         <div
-          className={`${open ? "flex" : "hidden"} absolute top-0 60px left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-10`}
+          className={`${open ? "flex" : "hidden"} absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-10`}
         >
           <button onClick={() => setOpen(false)}>
             <X size={18} />
@@ -326,7 +326,7 @@ ${highlightedIndex === index ? "bg-green-100" : "hover:bg-green-50"}`}
             All Product
           </NavLink>
           {user && (
-            <NavLink to="/products" onClick={() => setOpen(false)}>
+            <NavLink to="/my-orders" onClick={() => setOpen(false)}>
               My Orders
             </NavLink>
           )}
@@ -340,14 +340,10 @@ ${highlightedIndex === index ? "bg-green-100" : "hover:bg-green-50"}`}
 
           <div
             ref={searchContainerRef}
-            // className="flex relative flex-col w-96"
             className="relative mx-auto mt-4 flex w-[85%] items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5"
           >
-            <div 
-            className="h-4 w-4 text-gray-500"
-            // className="flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full bg-white"
-            >
-             <search  size={16} className="shrink-0 text-gray-400" / >
+            <div className="flex items-center gap-2 w-full">
+              <Search size={16} className="shrink-0 text-gray-400" />
               <input
                 value={searchQuery}
                 onKeyDown={handleSearchKeyDown}
